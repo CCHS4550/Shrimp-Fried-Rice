@@ -23,4 +23,10 @@ public final class Constants {
     public static final int BLdeviceID = 999;
     public static final int BRdeviceID = 999;
   }
+
+  public static class GrabberConstants {
+    // Replace with the CAN ID assigned to the grabber motor.
+    public static final int motorDeviceID = 999;
+    public static final double motorSpeed = 0.75;
+  }
 }

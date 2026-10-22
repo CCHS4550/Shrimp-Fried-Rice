@@ -9,6 +9,8 @@ import frc.robot.subsystems.drive.DriveIOHardware;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.controlschemes.GrabberScheme;
+import frc.robot.subsystems.grabber.Grabber;
 
 
 /**
@@ -19,11 +21,13 @@ public class RobotContainer {
   private final DriveScheme driveScheme = new DriveScheme();
   private final DriveIO driveIOHardware = new DriveIOHardware();
   private final Drive drive = new Drive(driveIOHardware);
+  private final Grabber grabber = new Grabber();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
   {
       driveScheme.configure(drive, 1);
+      new GrabberScheme().configure(grabber, 1);
 
   }
 
