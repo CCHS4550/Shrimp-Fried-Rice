@@ -63,30 +63,31 @@ public class Swerve extends SubsystemBase {
     private WantedState wantedState = WantedState.TELEOP_DRIVE;
 
     final SwerveIOInputsAutoLogged swerveInputs = new SwerveIOInputsAutoLogged();
+
+
     @Override
-    public void periodic()
-    {
-        io.updateInputs(swerveInputs);
+    public void periodic(){
+
+        frontRight.updateInputs(frontRightInputs);
+        frontLeft.updateInputs(frontLeftInputs);
+        backRight.updateInputs(backRightInputs);
+        backLeft.updateInputs(backLeftInputs);
+
         Logger.processInputs("Subsystem/Drive", swerveInputs);
+        Logger.processInputs("Subsystems/Drive/Module Data/Front Right", frontRightInputs);
+        Logger.processInputs("Subsystems/Drive/Module Data/Front Left", frontLeftInputs);
+        Logger.processInputs("Subsystems/Drive/Module Data/Back Left", backRightInputs);
+        Logger.processInputs("Subsystems/Drive/Module Data/Back Left", backLeftInputs);
 
         systemState = handleStateTransition();
+        applayState();
 
     }
 
-    public SwerveModuleState getState()
-    {
-        //current swerve state
+    public SystemState getSystemState(){
+        return systemState;
     }
     
-    public SwerveModuleState getPosition()
-    {
-        //current swerve position
-    }
-    
-    public void stop()
-    {
-        frontRight.setTurnOpenLoop(0.0);
-    }
 
     public ChassisSpeeds calculateSpeedsBasedOnJoystickInputs(){
         double flipControls = 1;
@@ -138,7 +139,10 @@ public class Swerve extends SubsystemBase {
     }
 
     public void setModuleStates(ChassisSpeeds speeds){
+        this.chassisSpeeds = speeds;// I don't know anything else :(
 
+        //change the chassis speed to module state to gwt the sepeed and angle of 4 wheels
+        desiredModuleStates = kinematics.toSwerveModuleStates(speeds);
     }
 
     public void applayState(){
