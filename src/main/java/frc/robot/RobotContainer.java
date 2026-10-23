@@ -18,16 +18,16 @@ import frc.robot.subsystems.grabber.Grabber;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...  
-  private final DriveScheme driveScheme = new DriveScheme();
   private final DriveIO driveIOHardware = new DriveIOHardware();
   private final Drive drive = new Drive(driveIOHardware);
   private final Grabber grabber = new Grabber();
+  private final GrabberScheme grabberScheme = new GrabberScheme();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
   {
-      driveScheme.configure(drive, 1);
-      new GrabberScheme().configure(grabber, 1);
+      DriveScheme.configure(drive, 1);
+      grabberScheme.configure(grabber, 1);
 
   }
 
