@@ -1,3 +1,4 @@
+// please dont change this file, even if your smart
 import org.gradle.internal.os.OperatingSystem
 
 pluginManagement {

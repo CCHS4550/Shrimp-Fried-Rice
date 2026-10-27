@@ -1,5 +1,10 @@
-# Better Starter Code
-Starter code by tejas, fixed up a little bit to remove duplicated imports, missing imports, and incomplete or unoptimized code.
-Better to read as well.
+# Shrimp Fried Rice
 
-Original was made by Terry and meg i think
+Preseason code for 2026 pre-season.
+
+Recommendations:
+Review code, ideally make your own branch and pull request when you're done.
+
+## Todo
+- Update grabber controlscheme
+- add differential drive

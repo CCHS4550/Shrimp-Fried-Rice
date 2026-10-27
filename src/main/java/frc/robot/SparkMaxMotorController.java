@@ -128,6 +128,16 @@ public class SparkMaxMotorController implements edu.wpi.first.wpilibj.motorcontr
         applyConfig();
     }
 
+    public void follow(SparkMaxMotorController leader){
+        sparkMaxConfig.follow(leader.motor);
+        applyConfig();
+    }
+
+    public void follow(SparkMaxMotorController leader, boolean invert){
+        sparkMaxConfig.follow(leader.motor, invert);
+        applyConfig();
+    }
+
     private void applyConfig(){
         motor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
