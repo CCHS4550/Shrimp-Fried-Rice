@@ -114,10 +114,15 @@ public class ModuleIOSpark implements ModuleIO{
      * @param voltage to set turn motor to
      */
     @Override
-    public void setTurnOpenLoop(double voltage)
-    {
-        turnMotor.setVoltage(voltage);
+    public void setDriveVelocity(double velocity){
+        driveMotor.setVoltage(velocity);
     }
+
+    @Override
+    public void setTurnPosition(double velocity){
+        turnMotor.setVoltage(velocity);
+    }
+
 
 }
 

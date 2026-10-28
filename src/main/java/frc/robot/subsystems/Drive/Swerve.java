@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Drive.module.ModuleIO;
@@ -130,6 +131,32 @@ public class Swerve extends SubsystemBase {
  
     }
 
+
+
+    public void setModuleStates(ChassisSpeeds speeds){
+        this.chassisSpeeds = speeds;// I don't know anything else :(
+
+        //change the chassis speed to module state to gwt the sepeed and angle of 4 wheels
+        desiredModuleStates = kinematics.toSwerveModuleStates(speeds);
+
+        frontRight.setDriveVelocity(10);
+        frontLeft.setDriveVelocity(10);
+        backRight.setDriveVelocity(10);
+        backRight.setDriveVelocity(10);
+        
+        
+        frontRight.setTurnPosition(10);
+        frontLeft.setTurnPosition(10);
+        backRight.setTurnPosition(10);
+        backRight.setTurnPosition(10);
+
+
+    }
+
+    public void setWantedState(WantedState state){
+        this.wantedState = state;
+    }
+
     public SystemState handleStateTransition(){
         return switch(wantedState){
             case TELEOP_DRIVE -> SystemState.TELEOP_DRIVE;
@@ -138,12 +165,6 @@ public class Swerve extends SubsystemBase {
 
     }
 
-    public void setModuleStates(ChassisSpeeds speeds){
-        this.chassisSpeeds = speeds;// I don't know anything else :(
-
-        //change the chassis speed to module state to gwt the sepeed and angle of 4 wheels
-        desiredModuleStates = kinematics.toSwerveModuleStates(speeds);
-    }
 
     public void applayState(){
         switch(systemState){
@@ -154,7 +175,11 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    
+    public SwerveModulePosition[] getSwerveModulePosition(){
+        return swerveInputs.SwerveModulePosition;
+    }
 
+    
+    
     
 }

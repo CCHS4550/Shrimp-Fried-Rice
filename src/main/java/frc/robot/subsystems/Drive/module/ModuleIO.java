@@ -17,18 +17,21 @@ public interface ModuleIO {
 
         // tracking variables for the turn motor
         public boolean turnConnected = false;
-        public Rotation2d turnPosition = new Rotation2d();
         public double turnVelocityRadPerSec = 0.0;
         public double turnAppliedVolts = 0.0;
         public double turnCurrentAmps = 0.0;
         public double turnEncoderVolts = 0.0;
 
         // tracking the odometry queues
-        public double[] odometryTimestamps = new double[] {};
-        public double[] odometryDrivePositionsRad = new double[] {};
-        public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
+       // public double[] odometryTimestamps = new double[] {};
+        //public double[] odometryDrivePositionsRad = new double[] {};
+        //public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
     }
 
-    public default void setTurnOpenLoop(double voltage){}
-    public default void setTurnPos(Rotation2d rotation){}
+    public default void setDriveVelocity(double velocity){}
+
+
+    public default void setTurnPosition(double velocity){}
+
+    default void updateSwerveInputs(SwerveIOInputs inputs) {}
 }
