@@ -108,11 +108,14 @@ public class ModuleIOSpark implements ModuleIO{
 
     }
 
-    /*
-     * Simple open loop function
-     * 
-     * @param voltage to set turn motor to
-     */
+
+    public void updateModuleInputs(SparkMax driveMotor ){
+        
+        driveMotor.getVelocity();
+
+    }
+
+
     @Override
     public void setDriveVelocity(double velocity){
         driveMotor.setVoltage(velocity);
@@ -122,7 +125,6 @@ public class ModuleIOSpark implements ModuleIO{
     public void setTurnPosition(double velocity){
         turnMotor.setVoltage(velocity);
     }
-
 
 }
 

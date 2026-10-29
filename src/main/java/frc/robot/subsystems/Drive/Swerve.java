@@ -8,7 +8,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Drive.module.ModuleIO;
 
 public class Swerve extends SubsystemBase {
@@ -28,7 +30,6 @@ public class Swerve extends SubsystemBase {
     private final ModuleIOInputsAutoLogged backLeftInputs = new ModuleIOInputsAutoLogged();
 
 
-    final SwerveIOInputsAutoLogged swerveInputs = newq SwerveIOInputsAutoLogged();
 
     private final ModuleIOInputsAutoLogged[] swerveModuleInputs;
 
@@ -37,6 +38,8 @@ public class Swerve extends SubsystemBase {
     private ChassisSpeeds chassisSpeeds;
 
     private SwerveDriveKinematics kinematics;
+
+    private CommandXboxController controller;
 
     public static final double CONTROLLER_DEADBAND = 0.1;
 
@@ -63,8 +66,15 @@ public class Swerve extends SubsystemBase {
     private SystemState systemState = SystemState.TELEOP_DRIVE;
     private WantedState wantedState = WantedState.TELEOP_DRIVE;
 
-    final SwerveIOInputsAutoLogged swerveInputs = new SwerveIOInputsAutoLogged();
 
+    public Swerve (ModuleIO frontLeft, ModuleIO frontRight, ModuleIO backLeft, ModuleIO backRight, CommandXboxController controller){
+        this.frontLeft = frontLeft;
+        this.frontRight = frontRight;
+        this.backLeft = backLeft;
+        this.backRight = backRight;
+
+        this.controller = controller;
+    }
 
     @Override
     public void periodic(){
@@ -74,7 +84,7 @@ public class Swerve extends SubsystemBase {
         backRight.updateInputs(backRightInputs);
         backLeft.updateInputs(backLeftInputs);
 
-        Logger.processInputs("Subsystem/Drive", swerveInputs);
+     
         Logger.processInputs("Subsystems/Drive/Module Data/Front Right", frontRightInputs);
         Logger.processInputs("Subsystems/Drive/Module Data/Front Left", frontLeftInputs);
         Logger.processInputs("Subsystems/Drive/Module Data/Back Left", backRightInputs);
@@ -82,6 +92,7 @@ public class Swerve extends SubsystemBase {
 
         systemState = handleStateTransition();
         applayState();
+        updateModuleInputs();
 
     }
 
@@ -94,13 +105,13 @@ public class Swerve extends SubsystemBase {
         double flipControls = 1;
 
         double xMagnitude =
-            flipControls * MathUtil.applayDeadband(controller.getLeftY(),CONTROLLER_DEADBAND);
+            flipControls * MathUtil.applyDeadband(controller.getLeftY(),CONTROLLER_DEADBAND);
 
         double yMagnitude =
-            flipControls * MathUtil.applayDeadband(controller.getLeftX(),CONTROLLER_DEADBAND);
+            flipControls * MathUtil.applyDeadband(controller.getLeftX(),CONTROLLER_DEADBAND);
         
         double angularMagnitude =
-            -1 * MathUtil.applayDeadband(controller.getLeftY(),CONTROLLER_DEADBAND);
+            -1 * MathUtil.applyDeadband(controller.getLeftY(),CONTROLLER_DEADBAND);
 
         xMagnitude = Math.copySign(xMagnitude * xMagnitude, xMagnitude);
         yMagnitude = Math.copySign(yMagnitude * yMagnitude, yMagnitude);
@@ -119,13 +130,13 @@ public class Swerve extends SubsystemBase {
 
         Rotation2d skewCompensationFactor = 
             Rotation2d.fromRadians(
-                swerveInputs.Speed.omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR );
+                .omegaRadiansPerSecond * SKEW_COMPENSATION_SCALAR );
         
 
         return ChassisSpeeds.fromRobotRelativeSpeeds(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 new ChassisSpeeds(xVelocity, yVelocity, angularVelocity),
-                swerveInput.Pose.getRotation()),
+                swerveInputs.Pose.getRotation()),
 
             swerveInputs.Pose.getRotation().plus(skewCompensationFactor));
  
@@ -139,16 +150,6 @@ public class Swerve extends SubsystemBase {
         //change the chassis speed to module state to gwt the sepeed and angle of 4 wheels
         desiredModuleStates = kinematics.toSwerveModuleStates(speeds);
 
-        frontRight.setDriveVelocity(10);
-        frontLeft.setDriveVelocity(10);
-        backRight.setDriveVelocity(10);
-        backRight.setDriveVelocity(10);
-        
-        
-        frontRight.setTurnPosition(10);
-        frontLeft.setTurnPosition(10);
-        backRight.setTurnPosition(10);
-        backRight.setTurnPosition(10);
 
 
     }
@@ -180,6 +181,6 @@ public class Swerve extends SubsystemBase {
     }
 
     
-    
+
     
 }
