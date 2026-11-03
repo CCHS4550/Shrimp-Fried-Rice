@@ -4,51 +4,94 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.GrabberConstants;
 import frc.robot.subsystems.grabber.GrabberIO.GrabberIOInputs;
+import org.littletonrobotics.junction.Logger;
 
 public class Grabber extends SubsystemBase {
-    private final GrabberIO io;
+    public enum WantedGrabberState {
+        IDLE,
+        COLLECTING,
+        EJECTING
+    }
+
+    public enum SystemState {
+        IDLE,
+        COLLECTING,
+        EJECTING
+    }
+
+    private final GrabberIO grabberIO;
     private final GrabberIOInputs inputs = new GrabberIOInputs();
 
-    public Grabber(GrabberIO io) {
-        this.io = io;
+    private WantedGrabberState wantedState = WantedGrabberState.IDLE;
+    private SystemState systemState = SystemState.IDLE;
+
+    public Grabber(GrabberIO grabberIO) {
+        this.grabberIO = grabberIO;
     }
 
     @Override
     public void periodic() {
-        io.updateInputs(inputs);
+        grabberIO.updateInputs(inputs);
+        systemState = handleStateTransitions();
+        Logger.recordOutput("Subsystems/Grabber/SystemState", systemState);
+        Logger.recordOutput("Subsystems/Grabber/DesiredState", wantedState);
+        applyStates();
     }
 
-    public void stop() {
-        io.stop();
+    private SystemState handleStateTransitions() {
+        switch (wantedState) {
+            case COLLECTING:
+                return SystemState.COLLECTING;
+            case EJECTING:
+                return SystemState.EJECTING;
+            case IDLE:
+            default:
+                return SystemState.IDLE;
+        }
     }
 
-    public void setSpeed(double speed) {
-        io.setSpeed(speed);
+    private void applyStates() {
+        switch (systemState) {
+            case COLLECTING:
+                grabberIO.setVoltage(GrabberConstants.collectVoltage);
+                break;
+            case EJECTING:
+                grabberIO.setVoltage(GrabberConstants.ejectVoltage);
+                break;
+            case IDLE:
+            default:
+                grabberIO.setVoltage(0.0);
+                break;
+        }
     }
 
-    public void setVoltage(double volts) {
-        io.setVoltage(volts);
+    public void setWantedState(WantedGrabberState state) {
+        if (state == this.wantedState) {
+            return;
+        }
+        this.wantedState = state;
     }
 
-    public Command runAtSpeed(double speed) {
+    public WantedGrabberState getWantedState() {
+        return wantedState;
+    }
+
+    public SystemState getSystemState() {
+        return systemState;
+    }
+
+    public Command setWantedStateCommand(WantedGrabberState state) {
         return runEnd(
-            () -> setSpeed(speed),
-            this::stop
+            () -> setWantedState(state),
+            () -> setWantedState(WantedGrabberState.IDLE)
         );
     }
 
-    public Command runVoltage(double volts) {
-        return runEnd(
-            () -> setVoltage(volts),
-            this::stop
-        );
+    public Command collectCommand() {
+        return setWantedStateCommand(WantedGrabberState.COLLECTING);
     }
 
-    public Command grab() {
-        return runAtSpeed(GrabberConstants.motorSpeed);
-    }
-
-    public Command eject() {
-        return runAtSpeed(-GrabberConstants.motorSpeed);
+    public Command ejectCommand() {
+        return setWantedStateCommand(WantedGrabberState.EJECTING);
     }
 }

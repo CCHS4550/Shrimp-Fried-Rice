@@ -16,8 +16,8 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-  
-  public static class DriveConstants{
+
+  public static class DriveConstants {
     public static final int FLdeviceID = 999;
     public static final int FRdeviceID = 999;
     public static final int BLdeviceID = 999;
@@ -25,9 +25,11 @@ public final class Constants {
   }
 
   public static class GrabberConstants {
-    // Replace with the CAN ID assigned to the grabber motor.
     public static final int motorDeviceID = 999;
-    public static final double motorSpeed = 0.75;
+    public static final double collectVoltage = 6.0;
+    public static final double ejectVoltage = -6.0;
+    public static final double supplyCurrentLimit = 40.0;
+    public static final double statorCurrentLimit = 90.0;
   }
 
   public static class ElevatorConstants {
