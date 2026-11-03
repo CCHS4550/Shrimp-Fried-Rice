@@ -9,6 +9,9 @@ import frc.robot.subsystems.drive.DriveIOHardware;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.elevators.Elevator;
+import frc.robot.subsystems.elevators.ElevatorIO;
+import frc.robot.subsystems.elevators.ElevatorIOHardware;
 import frc.robot.controlschemes.GrabberScheme;
 import frc.robot.subsystems.grabber.Grabber;
 import frc.robot.subsystems.grabber.GrabberIO;
@@ -22,6 +25,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...  
   private final DriveIO driveIOHardware = new DriveIOHardware();
   private final Drive drive = new Drive(driveIOHardware);
+  private final ElevatorIO elevatorIOHardware = new ElevatorIOHardware();
+  private final Elevator elevator = new Elevator(elevatorIOHardware);
   private final GrabberIO grabberIOHardware = new GrabberIOHardware();
   private final Grabber grabber = new Grabber(grabberIOHardware);
   private final GrabberScheme grabberScheme = new GrabberScheme();

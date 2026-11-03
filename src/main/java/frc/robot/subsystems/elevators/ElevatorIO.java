@@ -1,6 +1,17 @@
 package frc.robot.subsystems.elevators;
 
 public interface ElevatorIO {
+    public static class ElevatorIOInputs {
+        public double position = 0.0;
+        public double velocity = 0.0;
+        public double appliedVolts = 0.0;
+        public double supplyCurrentAmps = 0.0;
+        public double statorCurrentAmps = 0.0;
+    }
+
+    public default void updateInputs(ElevatorIOInputs inputs) {
+    }
+
     public default void stopElevator() {
     }
 

@@ -29,4 +29,20 @@ public final class Constants {
     public static final int motorDeviceID = 999;
     public static final double motorSpeed = 0.75;
   }
+
+  public static class ElevatorConstants {
+    public static final int motorDeviceID = 999;
+    public static final double supplyCurrentLimit = 40.0;
+    public static final double statorCurrentLimit = 80.0;
+    public static final double kP = 1.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kG = 0.0;
+    public static final double positionTolerance = 0.5;
+    public static final double stowedPosition = 0.0;
+    public static final double l1Position = 10.0;
+    public static final double l2Position = 20.0;
+    public static final double l3Position = 30.0;
+    public static final double l4Position = 40.0;
+  }
 }
