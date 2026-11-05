@@ -22,6 +22,8 @@ public final class Constants {
     public static final int FRdeviceID = 999;
     public static final int BLdeviceID = 999;
     public static final int BRdeviceID = 999;
+    public static final double supplyCurrentLimit = 40.0;
+    public static final double statorCurrentLimit = 80.0;
   }
 
   public static class GrabberConstants {

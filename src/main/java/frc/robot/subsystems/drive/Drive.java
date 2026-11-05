@@ -3,12 +3,19 @@ package frc.robot.subsystems.drive;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.drive.DriveIO.DriveIOInputs;
 
 public class Drive extends SubsystemBase {
     public final DriveIO io;
+    private final DriveIOInputs inputs = new DriveIOInputs();
 
     public Drive(DriveIO io) {
         this.io = io;
+    }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
     }
 
     public void stopRobot() {
