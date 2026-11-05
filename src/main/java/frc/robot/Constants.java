@@ -28,8 +28,6 @@ public final class Constants {
     public static final int motorDeviceID = 999;
     public static final double collectVoltage = 6.0;
     public static final double ejectVoltage = -6.0;
-    public static final double supplyCurrentLimit = 40.0;
-    public static final double statorCurrentLimit = 90.0;
   }
 
   public static class ElevatorConstants {
