@@ -13,17 +13,13 @@ public class Grabber extends SubsystemBase {
     public enum WantedGrabberState {
         IDLE,
         COLLECTING,
-        EJECTING,
-        MANUAL,
-        VOLTAGE
+        EJECTING
     }
 
     public enum SystemState {
         IDLE,
         COLLECTING,
-        EJECTING,
-        MANUAL,
-        VOLTAGE
+        EJECTING
     }
 
     private final GrabberIO io;
@@ -32,9 +28,6 @@ public class Grabber extends SubsystemBase {
 
     private WantedGrabberState wantedState = WantedGrabberState.IDLE;
     private SystemState systemState = SystemState.IDLE;
-
-    private double manualSpeed = 0.0;
-    private double manualVoltage = 0.0;
 
     public Grabber(GrabberIO io) {
         this.io = io;
@@ -64,10 +57,6 @@ public class Grabber extends SubsystemBase {
                 return SystemState.COLLECTING;
             case EJECTING:
                 return SystemState.EJECTING;
-            case MANUAL:
-                return SystemState.MANUAL;
-            case VOLTAGE:
-                return SystemState.VOLTAGE;
             case IDLE:
             default:
                 return SystemState.IDLE;
@@ -81,12 +70,6 @@ public class Grabber extends SubsystemBase {
                 break;
             case EJECTING:
                 io.setVoltage(GrabberConstants.ejectVoltage);
-                break;
-            case MANUAL:
-                io.setSpeed(manualSpeed);
-                break;
-            case VOLTAGE:
-                io.setVoltage(manualVoltage);
                 break;
             case IDLE:
             default:
@@ -115,19 +98,7 @@ public class Grabber extends SubsystemBase {
 
     public void stop() {
         wantedState = WantedGrabberState.IDLE;
-        manualSpeed = 0.0;
-        manualVoltage = 0.0;
         io.stop();
-    }
-
-    public void setSpeed(double speed) {
-        manualSpeed = speed;
-        wantedState = WantedGrabberState.MANUAL;
-    }
-
-    public void setVoltage(double volts) {
-        manualVoltage = volts;
-        wantedState = WantedGrabberState.VOLTAGE;
     }
 
     public double getPositionRad() {
@@ -167,19 +138,5 @@ public class Grabber extends SubsystemBase {
 
     public Command ejectCommand() {
         return setWantedStateCommand(WantedGrabberState.EJECTING);
-    }
-
-    public Command runAtSpeed(double speed) {
-        return runEnd(
-            () -> setSpeed(speed),
-            this::stop
-        );
-    }
-
-    public Command runVoltage(double volts) {
-        return runEnd(
-            () -> setVoltage(volts),
-            this::stop
-        );
     }
 }
