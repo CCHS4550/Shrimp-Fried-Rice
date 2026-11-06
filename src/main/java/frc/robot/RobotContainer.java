@@ -5,10 +5,10 @@
 package frc.robot;
 
 import frc.robot.controlschemes.DriveScheme;
-import frc.robot.subsystems.drive.DriveIOHardware;
+import frc.robot.subsystems.swerve.SwerveHardware;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.drive.DriveIO;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.swerve.SwerveIO;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.controlschemes.GrabberScheme;
 import frc.robot.subsystems.grabber.Grabber;
 import frc.robot.subsystems.grabber.GrabberIO;
@@ -20,8 +20,8 @@ import frc.robot.subsystems.grabber.GrabberIOHardware;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...  
-  private final DriveIO driveIOHardware = new DriveIOHardware();
-  private final Drive drive = new Drive(driveIOHardware);
+  private final SwerveIO swerveHardware = new SwerveHardware();
+  private final Swerve drive = new Drive(swerveHardware);
   private final GrabberIO grabberIOHardware = new GrabberIOHardware();
   private final Grabber grabber = new Grabber(grabberIOHardware);
   private final GrabberScheme grabberScheme = new GrabberScheme();
