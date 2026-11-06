@@ -9,26 +9,14 @@ import frc.robot.subsystems.elevators.ElevatorIO.ElevatorIOInputs;
 public class Elevator extends SubsystemBase {
     public enum WantedState {
         IDLE,
-        STOWED,
-        L1,
-        L2,
-        L3,
-        L4,
         POSITION,
-        MANUAL,
-        VOLTAGE
+        MANUAL
     }
 
     public enum SystemState {
         IDLE,
-        STOWED,
-        L1,
-        L2,
-        L3,
-        L4,
         POSITION,
-        MANUAL,
-        VOLTAGE
+        MANUAL
     }
 
     private final ElevatorIO io;
@@ -39,7 +27,6 @@ public class Elevator extends SubsystemBase {
 
     private double targetPosition = 0.0;
     private double targetSpeed = 0.0;
-    private double targetVoltage = 0.0;
 
     public Elevator(ElevatorIO io) {
         this.io = io;
@@ -54,24 +41,11 @@ public class Elevator extends SubsystemBase {
 
     private SystemState handleStateTransitions() {
         switch (wantedState) {
-            case IDLE:
-                return SystemState.IDLE;
-            case STOWED:
-                return SystemState.STOWED;
-            case L1:
-                return SystemState.L1;
-            case L2:
-                return SystemState.L2;
-            case L3:
-                return SystemState.L3;
-            case L4:
-                return SystemState.L4;
             case POSITION:
                 return SystemState.POSITION;
             case MANUAL:
                 return SystemState.MANUAL;
-            case VOLTAGE:
-                return SystemState.VOLTAGE;
+            case IDLE:
             default:
                 return SystemState.IDLE;
         }
@@ -79,38 +53,13 @@ public class Elevator extends SubsystemBase {
 
     private void applyStates() {
         switch (systemState) {
-            case IDLE:
-                io.stopElevator();
-                break;
-            case STOWED:
-                targetPosition = ElevatorConstants.stowedPosition;
-                io.setPosition(targetPosition);
-                break;
-            case L1:
-                targetPosition = ElevatorConstants.l1Position;
-                io.setPosition(targetPosition);
-                break;
-            case L2:
-                targetPosition = ElevatorConstants.l2Position;
-                io.setPosition(targetPosition);
-                break;
-            case L3:
-                targetPosition = ElevatorConstants.l3Position;
-                io.setPosition(targetPosition);
-                break;
-            case L4:
-                targetPosition = ElevatorConstants.l4Position;
-                io.setPosition(targetPosition);
-                break;
             case POSITION:
                 io.setPosition(targetPosition);
                 break;
             case MANUAL:
                 io.setSpeed(targetSpeed);
                 break;
-            case VOLTAGE:
-                io.setVoltage(targetVoltage);
-                break;
+            case IDLE:
             default:
                 io.stopElevator();
                 break;
@@ -136,7 +85,6 @@ public class Elevator extends SubsystemBase {
     public void stopElevator() {
         wantedState = WantedState.IDLE;
         targetSpeed = 0.0;
-        targetVoltage = 0.0;
         io.stopElevator();
     }
 
@@ -146,8 +94,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setVoltage(double volts) {
-        targetVoltage = volts;
-        wantedState = WantedState.VOLTAGE;
+        io.setVoltage(volts);
     }
 
     public void setPosition(double position) {
