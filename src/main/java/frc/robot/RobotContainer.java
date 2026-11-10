@@ -5,11 +5,14 @@
 package frc.robot;
 
 import frc.robot.controlschemes.DriveScheme;
-import frc.robot.subsystems.swerve.SwerveHardware;
+import frc.robot.subsystems.swerve.SwerveIOCTRE;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.controlschemes.GrabberScheme;
+import frc.robot.subsystems.elevators.Elevator;
 import frc.robot.subsystems.grabber.Grabber;
 import frc.robot.subsystems.grabber.GrabberIO;
 import frc.robot.subsystems.grabber.GrabberIOHardware;
@@ -20,17 +23,25 @@ import frc.robot.subsystems.grabber.GrabberIOHardware;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...  
-  private final SwerveIO swerveHardware = new SwerveHardware();
-  private final Swerve drive = new Drive(swerveHardware);
-  private final GrabberIO grabberIOHardware = new GrabberIOHardware();
-  private final Grabber grabber = new Grabber(grabberIOHardware);
-  private final GrabberScheme grabberScheme = new GrabberScheme();
+  private final Elevator elevator;
+  private final Grabber grabber;
+  private final SwerveSubsystem swerveSubsystem;
+  private final Superstructure superstructure;
+
+  private final CommandXboxController controller = new CommandXboxController(0);
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
   {
-      DriveScheme.configure(drive, 1);
-      grabberScheme.configure(grabber, 1);
+    //DriveScheme.configure(drive, 1);
+    //grabberScheme.configure(grabber, 1);
+    controller
+        .x()
+        .onTrue(
+          new InstantCommand(
+            () ->
+          ))
 
   }
 

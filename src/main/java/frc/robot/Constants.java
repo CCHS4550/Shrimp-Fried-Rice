@@ -18,15 +18,22 @@ public final class Constants {
   }
   
   public static class DriveConstants{
-    public static final int FLdeviceID = 999;
-    public static final int FRdeviceID = 999;
-    public static final int BLdeviceID = 999;
-    public static final int BRdeviceID = 999;
+    public static final int FrontLeftdeviceID = 999;
+    public static final int FrontRightdeviceID = 999;
+    public static final int BackLeftdeviceID = 999;
+    public static final int BackRightdeviceID = 999;
   }
 
-  public static class GrabberConstants {
+  public static class GrabberConstants{
     // Replace with the CAN ID assigned to the grabber motor.
-    public static final int motorDeviceID = 999;
+    public static final int GrabbermotorDeviceID = 999; 
     public static final double motorSpeed = 0.75;
+    public static final double GRABBER_GEAR_RATIO = 80;
+  }
+
+  public static class elevatorConstants{
+    public static final int ElevatormotorDeviceID = 999;
+    public static final double motorSpeed = 0.75;
+    public static final double ELEVATOR_GEAR_RATIO = 999;
   }
 }
