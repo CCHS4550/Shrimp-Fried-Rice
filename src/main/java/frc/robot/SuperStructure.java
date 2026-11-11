@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem.SystemState;
 import frc.robot.subsystems.grabber.Grabber;
+import frc.robot.subsystems.grabber.Grabber.WantedGrabberState;
 import frc.robot.subsystems.elevators.Elevator;
+import frc.robot.subsystems.elevators.Elevator.WantedState;
 
 public class Superstructure extends SubsystemBase {
     public boolean stopApplyingState = false;
@@ -18,6 +20,12 @@ public class Superstructure extends SubsystemBase {
     private final Grabber grabber;
 
     public enum WantedSuperstructureState {
+        IDLE,
+        INTAKING,
+        SCORE
+    }
+
+    public enum SystemState {
         IDLE,
         INTAKING,
         SCORE
@@ -34,7 +42,9 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic(){
-       
+       systemState = handleStateTransition();
+
+       applyState();
     }
 
     public void setWantedSuperStructure(WantedSuperstructureState wantedState){
@@ -44,9 +54,28 @@ public class Superstructure extends SubsystemBase {
     private void applyState(){
         switch (systemState){
             case IDLE:
-
+                elevator.setWantedElevatorState(WantedState.IDLE);
             case INTAKING:
-                elevator.
+                elevator.setWantedElevatorState(WantedState.);
+                grabber.setWantedGrabberState(WantedGrabberState.COLLECTING);
+            case SCORE:
+                elevator.setWantedElevatorState(WantedState.POSITION);
+                if(/*condition that make sure elevator is in the right position before ejecting*/){
+                    grabber.setWantedGrabberState(WantedGrabberState.EJECTING);
+                }
+        }
+    }
+
+    private SystemState handleStateTransitions(){
+        switch (wantedState1) {
+            case IDLE:
+                return SystemState.IDLE;
+            case INTAKING:
+                return SystemState.INTAKING;
+            case SCORE:
+                return SystemState.SCORE;
+            default:
+                return SystemState.IDLE;
         }
     }
 

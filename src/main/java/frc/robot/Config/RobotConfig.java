@@ -8,6 +8,8 @@ import frc.robot.Util.CanDeviceID;
 public class RobotConfig {
     private static final CANBus CANIVORE_CANBUS  = new CANBus("CANivore");
 
+    public final CanDeviceID GYRO = new CanDeviceID(13);
+
     public final CanDeviceID FRONT_LEFT_DRIVE_MOTOR = new CanDeviceID(1);
     public final CanDeviceID FRONT_LEFT_STEER_MOTOR = new CanDeviceID(2);
     public final CanDeviceID FRONT_LEFT_STEER_ENCODER = new CanDeviceID(3);
@@ -24,7 +26,8 @@ public class RobotConfig {
     public final CanDeviceID BACK_RIGHT_STEER_MOTOR = new CanDeviceID(11);
     public final CanDeviceID BACK_RIGHT_STEER_ENCODER = new CanDeviceID(12);
 
-    public final CanDeviceID ELEVATION_MOTOR = new CanDeviceID(13, CANIVORE_CANBUS);
+    public final CanDeviceID ELEVATION_MOTOR = new CanDeviceID(15, CANIVORE_CANBUS);
+    public final CanDeviceID GRABBER_Motor = new CanDeviceID(19, CANIVORE_CANBUS);
 
     /**
      * Wheel radius in meters. Accuracy in these measurements affects wheel odometry which measures
@@ -39,5 +42,6 @@ public class RobotConfig {
     private final double STEER_GEAR_RATIO = 26;
 
     //arm gear ratio
-    private final double ARM_GEAR_RATIO = 80;
+    private final double ELEVATOR_GEAR_RATIO = 80;
+
 }
