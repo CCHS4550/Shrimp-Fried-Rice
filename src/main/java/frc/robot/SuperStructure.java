@@ -2,11 +2,9 @@ package frc.robot;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.subsystems.swerve.SwerveSubsystem.SystemState;
 import frc.robot.subsystems.grabber.Grabber;
 import frc.robot.subsystems.grabber.Grabber.WantedGrabberState;
 import frc.robot.subsystems.elevators.Elevator;
@@ -18,6 +16,9 @@ public class Superstructure extends SubsystemBase {
     private final SwerveSubsystem swerveSubsystem;
     private final Elevator elevator;
     private final Grabber grabber;
+
+    public Trigger ejecting = new Trigger(() -> 
+        elevator.getSystemState() == elevator.WantedState.POSITION);
 
     public enum WantedSuperstructureState {
         IDLE,
@@ -43,7 +44,6 @@ public class Superstructure extends SubsystemBase {
     @Override
     public void periodic(){
        systemState = handleStateTransition();
-
        applyState();
     }
 
@@ -56,17 +56,18 @@ public class Superstructure extends SubsystemBase {
             case IDLE:
                 elevator.setWantedElevatorState(WantedState.IDLE);
             case INTAKING:
-                elevator.setWantedElevatorState(WantedState.);
+                elevator.setWantedElevatorState(WantedState.POSITION);
                 grabber.setWantedGrabberState(WantedGrabberState.COLLECTING);
             case SCORE:
                 elevator.setWantedElevatorState(WantedState.POSITION);
-                if(/*condition that make sure elevator is in the right position before ejecting*/){
-                    grabber.setWantedGrabberState(WantedGrabberState.EJECTING);
-                }
+                /*condition that make sure elevator is in the right position before ejecting*/
+            if(ejecting.getAsBoolean()){
+                grabber.setWantedGrabberState(WantedGrabberState.EJECTING);
+            }
         }
     }
 
-    private SystemState handleStateTransitions(){
+    private SystemState handleStateTransition(){
         switch (wantedState1) {
             case IDLE:
                 return SystemState.IDLE;
