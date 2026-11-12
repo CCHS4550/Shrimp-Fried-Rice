@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import frc.robot.Config.RobotConfig;
+import frc.robot.Superstructure.WantedSuperstructureState;
 import frc.robot.controlschemes.DriveScheme;
 import frc.robot.subsystems.swerve.SwerveIOCTRE;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,13 +15,14 @@ import frc.robot.subsystems.swerve.SwerveIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.controlschemes.GrabberScheme;
 import frc.robot.subsystems.elevators.Elevator;
+import frc.robot.subsystems.elevators.ElevatorIOHardware;
 import frc.robot.subsystems.grabber.Grabber;
 import frc.robot.subsystems.grabber.GrabberIO;
 import frc.robot.subsystems.grabber.GrabberIOHardware;
 
 
 /**
- * WPILib recommends putting most robot logic in here. Creek takes it 1 step further and abstracts it to seperate files
+ * WPILib recommends putting most robot logic in here. Creek takes it 1 step further and abstracts it to separate files
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...  
@@ -36,12 +39,34 @@ public class RobotContainer {
   {
     //DriveScheme.configure(drive, 1);
     //grabberScheme.configure(grabber, 1);
+    RobotConfig config = new RobotConfig();
+
+    swerveSubsystem = new SwerveSubsystem(new SwerveIOCTRE(config.getSwerveDrivetrainConstants(), config.getModuleConstants()));
+
+    elevator = new Elevator(new ElevatorIOHadware(config));
+    grabber = new Grabber(new GrabberIOHardware(config));
+
+
+    superstructure = new Superstructure(swerveSubsystem, elevator, grabber);
+
+
     controller
         .x()
         .onTrue(
           new InstantCommand(
-            () ->
-          ))
+            () -> superstructure.setWantedSuperStructure(WantedSuperstructureState.INTAKING)))
+        .onFalse(
+          new InstantCommand(
+            () -> superstructure.setWantedSuperStructure(WantedSuperstructureState.IDLE)));
+
+            
+    controller
+        .y()
+        .onTrue(
+          new InstantCommand(
+            () -> superstructure.setWantedSuperStructure(WantedSuperstructureState.SCORE)))
+        .onFalse(new InstantCommand(
+          () -> superstructure.setWantedSuperStructure(WantedSuperstructureState.IDLE)));
 
   }
 
