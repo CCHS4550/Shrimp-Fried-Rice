@@ -86,6 +86,7 @@ public class GrabberIOHardware implements GrabberIO {
 
     @Override
     public void stop() {
+        grabberSpark.setVoltage(0.0);
         grabberSpark.stopMotor();
     }
 

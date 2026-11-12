@@ -39,8 +39,6 @@ public class Grabber extends SubsystemBase {
 
         if (DriverStation.isDisabled()) {
             wantedState = WantedGrabberState.IDLE;
-            systemState = SystemState.IDLE;
-            io.stop();
         }
 
         systemState = handleStateTransitions();
@@ -79,9 +77,6 @@ public class Grabber extends SubsystemBase {
     }
 
     public void setWantedState(WantedGrabberState wantedState) {
-        if (this.wantedState == wantedState) {
-            return;
-        }
         this.wantedState = wantedState;
         if (wantedState == WantedGrabberState.IDLE) {
             io.stop();
