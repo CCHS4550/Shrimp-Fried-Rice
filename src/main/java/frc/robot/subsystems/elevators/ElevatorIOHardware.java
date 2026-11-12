@@ -1,117 +1,126 @@
 package frc.robot.subsystems.elevators;
 
-import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
+import com.revrobotics.PersistMode;
+import com.revrobotics.REVLibError;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.FeedForwardConfig;
+import com.revrobotics.spark.config.SignalsConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOHardware implements ElevatorIO {
-    private final TalonFX motor = new TalonFX(ElevatorConstants.motorDeviceID);
-    private final PositionVoltage positionRequest = new PositionVoltage(0.0);
-
-    private final StatusSignal<Angle> positionSignal;
-    private final StatusSignal<AngularVelocity> velocitySignal;
-    private final StatusSignal<Voltage> voltageSignal;
-    private final StatusSignal<Current> supplyCurrentSignal;
-    private final StatusSignal<Current> statorCurrentSignal;
+    private final SparkMax elevatorSpark;
+    private final RelativeEncoder elevatorEncoder;
+    private final SparkClosedLoopController closedLoopController;
+    private final SparkMaxConfig elevatorConfig;
+    private final Debouncer elevatorDebouncer = new Debouncer(0.5);
 
     public ElevatorIOHardware() {
-        TalonFXConfiguration config = new TalonFXConfiguration();
+        elevatorSpark = new SparkMax(ElevatorConstants.motorDeviceID, MotorType.kBrushless);
+        elevatorEncoder = elevatorSpark.getEncoder();
+        closedLoopController = elevatorSpark.getClosedLoopController();
+        elevatorConfig = new SparkMaxConfig();
 
-        MotorOutputConfigs motorOutput = config.MotorOutput;
-        motorOutput.NeutralMode = NeutralModeValue.Brake;
-        motorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        elevatorConfig.inverted(false);
+        elevatorConfig.idleMode(IdleMode.kBrake);
+        elevatorConfig.smartCurrentLimit(ElevatorConstants.smartCurrentLimit);
+        elevatorConfig.voltageCompensation(12.0);
 
-        CurrentLimitsConfigs currentLimits = config.CurrentLimits;
-        currentLimits.SupplyCurrentLimitEnable = true;
-        currentLimits.StatorCurrentLimitEnable = true;
-        currentLimits.SupplyCurrentLimit = ElevatorConstants.supplyCurrentLimit;
-        currentLimits.StatorCurrentLimit = ElevatorConstants.statorCurrentLimit;
+        EncoderConfig encoderConfig = new EncoderConfig();
+        encoderConfig.positionConversionFactor(1.0);
+        encoderConfig.velocityConversionFactor(1.0 / 60.0);
+        encoderConfig.uvwMeasurementPeriod(20);
+        encoderConfig.uvwAverageDepth(2);
+        elevatorConfig.apply(encoderConfig);
 
-        Slot0Configs slot0 = config.Slot0;
-        slot0.kP = ElevatorConstants.kP;
-        slot0.kI = ElevatorConstants.kI;
-        slot0.kD = ElevatorConstants.kD;
-        slot0.kG = ElevatorConstants.kG;
-        slot0.GravityType = GravityTypeValue.Elevator_Static;
+        FeedForwardConfig feedForwardConfig = new FeedForwardConfig();
+        feedForwardConfig.kG(ElevatorConstants.kG);
 
-        TalonFXConfigurator configurator = motor.getConfigurator();
-        configurator.apply(config);
+        ClosedLoopConfig closedLoopConfig = new ClosedLoopConfig();
+        closedLoopConfig.pid(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
+        closedLoopConfig.outputRange(-1.0, 1.0);
+        closedLoopConfig.apply(feedForwardConfig);
+        elevatorConfig.apply(closedLoopConfig);
 
-        motor.setPosition(0.0);
+        SignalsConfig signalsConfig = new SignalsConfig();
+        signalsConfig.primaryEncoderPositionAlwaysOn(true);
+        signalsConfig.primaryEncoderVelocityAlwaysOn(true);
+        signalsConfig.primaryEncoderPositionPeriodMs(20);
+        signalsConfig.primaryEncoderVelocityPeriodMs(20);
+        signalsConfig.appliedOutputPeriodMs(20);
+        signalsConfig.busVoltagePeriodMs(20);
+        signalsConfig.outputCurrentPeriodMs(20);
+        elevatorConfig.apply(signalsConfig);
 
-        positionSignal = motor.getPosition();
-        velocitySignal = motor.getVelocity();
-        voltageSignal = motor.getMotorVoltage();
-        supplyCurrentSignal = motor.getSupplyCurrent();
-        statorCurrentSignal = motor.getStatorCurrent();
+        elevatorSpark.configure(
+            elevatorConfig,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters
+        );
+        elevatorEncoder.setPosition(0.0);
     }
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        BaseStatusSignal.refreshAll(
-            positionSignal,
-            velocitySignal,
-            voltageSignal,
-            supplyCurrentSignal,
-            statorCurrentSignal
-        );
-        inputs.position = positionSignal.getValueAsDouble();
-        inputs.velocity = velocitySignal.getValueAsDouble();
-        inputs.appliedVolts = voltageSignal.getValueAsDouble();
-        inputs.supplyCurrentAmps = supplyCurrentSignal.getValueAsDouble();
-        inputs.statorCurrentAmps = statorCurrentSignal.getValueAsDouble();
+        REVLibError lastError = elevatorSpark.getLastError();
+        boolean isOk = lastError == REVLibError.kOk;
+        inputs.connected = elevatorDebouncer.calculate(isOk);
+
+        if (inputs.connected) {
+            double appliedOutput = elevatorSpark.getAppliedOutput();
+            double busVoltage = elevatorSpark.getBusVoltage();
+
+            inputs.position = elevatorEncoder.getPosition();
+            inputs.velocity = elevatorEncoder.getVelocity();
+            inputs.appliedVolts = appliedOutput * busVoltage;
+            inputs.currentAmps = elevatorSpark.getOutputCurrent();
+        }
     }
 
     @Override
     public void stopElevator() {
-        motor.stopMotor();
+        elevatorSpark.stopMotor();
     }
 
     @Override
     public void setSpeed(double speed) {
-        motor.set(speed);
+        double clampedSpeed = MathUtil.clamp(speed, -1.0, 1.0);
+        elevatorSpark.set(clampedSpeed);
     }
 
     @Override
     public void setVoltage(double volts) {
-        motor.setVoltage(volts);
+        double clampedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+        elevatorSpark.setVoltage(clampedVolts);
     }
 
     @Override
     public void setPosition(double position) {
-        PositionVoltage request = positionRequest.withPosition(position);
-        motor.setControl(request);
+        closedLoopController.setSetpoint(position, ControlType.kPosition);
     }
 
     @Override
     public double getPosition() {
-        positionSignal.refresh();
-        return positionSignal.getValueAsDouble();
+        return elevatorEncoder.getPosition();
     }
 
     @Override
     public double getVelocity() {
-        velocitySignal.refresh();
-        return velocitySignal.getValueAsDouble();
+        return elevatorEncoder.getVelocity();
     }
 
     @Override
     public void resetEncoder() {
-        motor.setPosition(0.0);
+        elevatorEncoder.setPosition(0.0);
     }
 }
-
