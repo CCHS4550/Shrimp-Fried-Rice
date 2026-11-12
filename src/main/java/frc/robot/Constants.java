@@ -34,8 +34,7 @@ public final class Constants {
 
   public static class ElevatorConstants {
     public static final int motorDeviceID = 999;
-    public static final double supplyCurrentLimit = 40.0;
-    public static final double statorCurrentLimit = 80.0;
+    public static final int smartCurrentLimit = 40;
     public static final double kP = 1.0;
     public static final double kI = 0.0;
     public static final double kD = 0.0;
