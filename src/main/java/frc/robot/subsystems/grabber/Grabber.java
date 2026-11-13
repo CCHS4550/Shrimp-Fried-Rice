@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.GrabberConstants;
 import frc.robot.subsystems.grabber.GrabberIO.GrabberIOInputs;
 import org.littletonrobotics.junction.Logger;
 
@@ -66,10 +65,10 @@ public class Grabber extends SubsystemBase {
     public void applyStates() {
         switch (systemState) {
             case COLLECTING:
-                io.setVoltage(GrabberConstants.collectVoltage);
+                io.setVoltage(3.0);
                 break;
             case EJECTING:
-                io.setVoltage(GrabberConstants.ejectVoltage);
+                io.setVoltage(-3.0);
                 break;
             case IDLE:
             default:
@@ -121,22 +120,7 @@ public class Grabber extends SubsystemBase {
         io.resetEncoder();
     }
 
-    public Command setWantedStateCommand(WantedGrabberState state) {
-        return runEnd(
-            () -> setWantedState(state),
-            this::stop
-        );
-    }
-
     public Command idleCommand() {
         return runOnce(this::stop);
-    }
-
-    public Command collectCommand() {
-        return setWantedStateCommand(WantedGrabberState.COLLECTING);
-    }
-
-    public Command ejectCommand() {
-        return setWantedStateCommand(WantedGrabberState.EJECTING);
     }
 }

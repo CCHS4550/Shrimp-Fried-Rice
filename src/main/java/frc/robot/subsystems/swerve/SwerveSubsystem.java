@@ -10,7 +10,6 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
-import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -25,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Util.SubsystemDataProcessor;
+
 import java.util.Optional;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -106,7 +107,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveSubsystem(
       SwerveIO io,
-      RobotConfig PP_Config,
       CommandXboxController controller,
       double maxVelocity,
       double maxAngularVelocity) {
@@ -120,14 +120,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     driveAtAngle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-    SubsystemDataProcessor.createAndStartSubsystemDataProcessor(
-        () -> {
-          synchronized (moduleIOLock) {
-            io.updateModuleInputs(
-                frontLeftInputs, frontRightInputs, backLeftInputs, backRightInputs);
-          }
-        },
-        io);
+  
   }
 
   /**
@@ -312,36 +305,12 @@ public class SwerveSubsystem extends SubsystemBase {
     return driveAtAngle.HeadingController.getPositionError() < tolerance;
   }
 
-  public double getDistanceFromDriveToPointSetpoint() {
-    var diff =
-        desiredPoseForDriveToPoint
-            .getTranslation()
-            .minus(swerveInputs.Pose.getTranslation())
-            .getNorm();
-    Logger.recordOutput("DistanceFromDriveToPointSetpoint", diff);
-    return diff;
-  }
-
   public void setTeleopVelocityCoefficient(double teleopVelocityCoefficient) {
     this.teleopVelocityCoefficient = teleopVelocityCoefficient;
   }
 
   public void setRotationVelocityCoefficient(double rotationVelocityCoefficient) {
     this.rotationVelocityCoefficient = rotationVelocityCoefficient;
-  }
-
-  public double getRobotDistanceFromChoreoEndpoint() {
-    Logger.recordOutput("Choreo/FinalPose", desiredChoreoTrajectory.getFinalPose(false).get());
-    var distance =
-        Math.abs(
-            desiredChoreoTrajectory
-                .getFinalPose(false)
-                .get()
-                .minus(Robotstate.getInstance().getRobotPoseFromSwerveDriveOdometry())
-                .getTranslation()
-                .getNorm());
-    Logger.recordOutput("Choreo/DistanceFromEndpoint", distance);
-    return distance;
   }
 
 

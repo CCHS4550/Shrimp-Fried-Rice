@@ -86,10 +86,7 @@ public class SwerveIOCTRE extends SwerveDrivetrain implements SwerveIO {
     this.resetTranslation(translation2d);
   }
 
-  @Override
-  public void updateSimState() {
-    this.updateSimState(Robot.defaultPeriodSecs, 13.00);
-  }
+  
 
   @Override
   public void addQuestPose(Pose2d pose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs) {

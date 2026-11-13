@@ -13,7 +13,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface SwerveIO extends SubsystemDataProcessor.IODataRefresher {
+public interface SwerveIO {
   @AutoLog
   class SwerveIOInputs {
     public Pose2d Pose = new Pose2d();
@@ -38,8 +38,6 @@ public interface SwerveIO extends SubsystemDataProcessor.IODataRefresher {
       this.FailedDaqs = state.FailedDaqs;
       this.OdometryPeriod = state.OdometryPeriod;
       this.Timestamp = state.OdometryPeriod;
-      Robotstate.getInstance()
-          .addPoseObservation(new Robotstate.SwerveDriveObservation(this.Pose, this.Speeds));
     }
   }
 
@@ -77,6 +75,6 @@ public interface SwerveIO extends SubsystemDataProcessor.IODataRefresher {
   default void addQuestPose(
       Pose2d pose, double timestamp, Matrix<N3, N1> visionMeasurementStdDevs) {}
 
-  @Override
+  
   default void refreshData() {}
 }

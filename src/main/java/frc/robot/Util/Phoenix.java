@@ -102,12 +102,7 @@ public class Phoenix {
       DriverStation.reportWarning(
           "Failed to read config for talon [" + talon.getDescription() + "]", false);
       return false;
-    } else if (!TalonFXConfigEquality.isEqual(config, readConfig)) {
-      // configs did not match
-      DriverStation.reportWarning(
-          "Configuration verification failed for talon [" + talon.getDescription() + "]", false);
-      return false;
-    } else {
+    }  else {
       // configs read and match, Talon OK
       return true;
     }

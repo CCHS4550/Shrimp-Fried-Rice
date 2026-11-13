@@ -6,14 +6,12 @@ package frc.robot;
 
 import frc.robot.Config.RobotConfig;
 import frc.robot.Superstructure.WantedSuperstructureState;
-import frc.robot.controlschemes.DriveScheme;
 import frc.robot.subsystems.swerve.SwerveIOCTRE;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.swerve.SwerveIO;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.controlschemes.GrabberScheme;
 import frc.robot.subsystems.elevators.Elevator;
 import frc.robot.subsystems.elevators.ElevatorIOHardware;
 import frc.robot.subsystems.grabber.Grabber;
@@ -31,6 +29,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem;
   private final Superstructure superstructure;
 
+
   private final CommandXboxController controller = new CommandXboxController(0);
 
 
@@ -41,9 +40,9 @@ public class RobotContainer {
     //grabberScheme.configure(grabber, 1);
     RobotConfig config = new RobotConfig();
 
-    swerveSubsystem = new SwerveSubsystem(new SwerveIOCTRE(config.getSwerveDrivetrainConstants(), config.getModuleConstants()));
+    swerveSubsystem = new SwerveSubsystem(new SwerveIOCTRE(config.getSwerveDrivetrainConstants(), config.getModuleConstants()), controller, 9.0, 9.0);
 
-    elevator = new Elevator(new ElevatorIOHadware(config));
+    elevator = new Elevator(new ElevatorIOHardware(config));
     grabber = new Grabber(new GrabberIOHardware(config));
 
 

@@ -35,5 +35,7 @@ public final class Constants {
     public static final int ElevatormotorDeviceID = 999;
     public static final double motorSpeed = 0.75;
     public static final double ELEVATOR_GEAR_RATIO = 999;
+
+    public static final double positionTolerance = 0.01;
   }
 }

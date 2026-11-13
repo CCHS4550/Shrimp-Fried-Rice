@@ -17,9 +17,6 @@ public class Superstructure extends SubsystemBase {
     private final Elevator elevator;
     private final Grabber grabber;
 
-    public Trigger ejecting = new Trigger(() -> 
-        elevator.getSystemState() == elevator.WantedState.POSITION);
-
     public enum WantedSuperstructureState {
         IDLE,
         INTAKING,
@@ -54,16 +51,17 @@ public class Superstructure extends SubsystemBase {
     private void applyState(){
         switch (systemState){
             case IDLE:
-                elevator.setWantedElevatorState(WantedState.IDLE);
+                elevator.setWantedState(WantedState.IDLE);
+                grabber.setWantedGrabberState(WantedGrabberState.IDLE);
             case INTAKING:
-                elevator.setWantedElevatorState(WantedState.POSITION);
+                elevator.setWantedState(WantedState.POSITION);
                 grabber.setWantedGrabberState(WantedGrabberState.COLLECTING);
             case SCORE:
-                elevator.setWantedElevatorState(WantedState.POSITION);
+                elevator.setWantedState(WantedState.POSITION);
                 /*condition that make sure elevator is in the right position before ejecting*/
-            if(ejecting.getAsBoolean()){
-                grabber.setWantedGrabberState(WantedGrabberState.EJECTING);
-            }
+                if(elevator.atSetpoint()){
+                    grabber.setWantedGrabberState(WantedGrabberState.EJECTING);
+                }
         }
     }
 

@@ -1,10 +1,14 @@
 package frc.robot.subsystems.elevators;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants;
 import frc.robot.subsystems.elevators.ElevatorIO.ElevatorIOInputs;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
     public enum WantedState {
@@ -21,6 +25,7 @@ public class Elevator extends SubsystemBase {
 
     private final ElevatorIO io;
     private final ElevatorIOInputs inputs = new ElevatorIOInputs();
+    private final Alert elevatorDisconnectedAlert = new Alert("Disconnected elevator spark", AlertType.kError);
 
     private WantedState wantedState = WantedState.IDLE;
     private SystemState systemState = SystemState.IDLE;
@@ -35,8 +40,19 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
+
+        if (DriverStation.isDisabled()) {
+            wantedState = WantedState.IDLE;
+            systemState = SystemState.IDLE;
+            io.stopElevator();
+        }
+
         systemState = handleStateTransitions();
         applyStates();
+
+        Logger.recordOutput("Subsystems/Elevator/SystemState", systemState);
+        Logger.recordOutput("Subsystems/Elevator/WantedState", wantedState);
+        elevatorDisconnectedAlert.set(!inputs.connected);
     }
 
     private SystemState handleStateTransitions() {
@@ -66,7 +82,7 @@ public class Elevator extends SubsystemBase {
         }
     }
 
-    public void setWantedElevatorState(WantedState wantedState) {
+    public void setWantedState(WantedState wantedState) {
         this.wantedState = wantedState;
     }
 
@@ -79,7 +95,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public boolean atSetpoint() {
-        return MathUtil.isNear(targetPosition, inputs.position, ElevatorConstants.positionTolerance);
+        return MathUtil.isNear(targetPosition, inputs.position, Constants.elevatorConstants.positionTolerance);
     }
 
     public void stopElevator() {
@@ -110,13 +126,21 @@ public class Elevator extends SubsystemBase {
         return inputs.velocity;
     }
 
+    public double getAppliedVolts() {
+        return inputs.appliedVolts;
+    }
+
+    public double getCurrentAmps() {
+        return inputs.currentAmps;
+    }
+
     public void resetEncoder() {
         io.resetEncoder();
     }
 
     public Command setStateCommand(WantedState state) {
         return runEnd(
-            () -> setWantedElevatorState(state),
+            () -> setWantedState(state),
             this::stopElevator
         );
     }

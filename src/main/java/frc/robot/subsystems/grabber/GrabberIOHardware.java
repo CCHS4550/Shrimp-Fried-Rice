@@ -13,7 +13,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants.GrabberConstants;
+import frc.robot.Config.RobotConfig;
 
 public class GrabberIOHardware implements GrabberIO {
     private final SparkMax grabberSpark;
@@ -21,8 +21,8 @@ public class GrabberIOHardware implements GrabberIO {
     private final SparkMaxConfig grabberConfig;
     private final Debouncer grabberDebouncer = new Debouncer(0.5);
 
-    public GrabberIOHardware() {
-        grabberSpark = new SparkMax(GrabberConstants.motorDeviceID, MotorType.kBrushless);
+    public GrabberIOHardware(RobotConfig config) {
+        grabberSpark = new SparkMax(config.GRABBER_Motor.getDeviceNumber(), MotorType.kBrushless);
         grabberEncoder = grabberSpark.getEncoder();
         grabberConfig = new SparkMaxConfig();
 
